@@ -70,7 +70,7 @@ public class PpatkResultEntity {
 		this.status = status;
 		this.identificationNumber = identificationNumber;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -161,5 +161,6 @@ public class PpatkResultEntity {
 				+ dateCreated + ", lastUpdated=" + lastUpdated + ", onlineRegistrationId=" + onlineRegistrationId
 				+ ", registrationId=" + registrationId + ", createdById=" + createdById + ", status=" + status
 				+ ", identificationNumber=" + identificationNumber + "]";
-	}    
+	}
+	
 }

@@ -74,6 +74,7 @@ public class NikController {
 			String token = setAuth.postForObject(uri, result, String.class);
 			
 			Object objv=JSONValue.parse(token); 
+			System.out.println(objv);
 			JSONObject jsonObject = (JSONObject) objv; 
 			String access_token = (String) jsonObject.get("access_token"); 
 			//dapat token
@@ -90,7 +91,7 @@ public class NikController {
 			String dataNik = ne.get(j).getIdentificationNumber();
 			System.out.println("loop data nik "+dataNik);
 			
-			String uriPpatk = "http://192.168.153.3/api/v1/data/nik/3276031002940005";
+			String uriPpatk = "http://192.168.153.3/api/v1/data/nik/"+dataNik;
 						
 			RestTemplate restTemplatex = new RestTemplate();
 		    HttpHeaders headersx = new HttpHeaders();
@@ -124,66 +125,6 @@ public class NikController {
 		obj.put("data", list);
 		obj.put("success", true);
 		return obj;
-	}
-	
-	
-	@GetMapping("/getNik")
-	public String pushToken() {
-		//generate token
-	    String uri = "http://192.168.153.2/api/auth"; 
-	    String notEncoded ="phintraco:p7i5t7a5";
-	    String encodedAuth = Base64.getEncoder().encodeToString(notEncoded.getBytes());
-	    System.out.println("encodeUserPass "+encodedAuth);
-		    RestTemplate restTemplate = new RestTemplate();
-		    HttpHeaders headers = new HttpHeaders();
-		    headers.setContentType(MediaType.APPLICATION_JSON);
-		    headers.set("client_id", "phintraco");
-		    headers.set("Authorization", "Basic "+encodedAuth);
-
-		  
-			HttpEntity<String> result = new HttpEntity<String>(headers);
-			String token = restTemplate.postForObject(uri, result, String.class);
-			
-			Object obj=JSONValue.parse(token); 
-			JSONObject jsonObject = (JSONObject) obj; 
-			String access_token = (String) jsonObject.get("access_token"); 
-			//dapat token
-			System.out.println("baru di get "+access_token);
-			
-			
-		//hit get nik
-        String urix = "http://192.168.153.3/api/v1/data/nik/1050176605823007"; 
-	    RestTemplate restTemplatex = new RestTemplate();
-	    HttpHeaders headersx = new HttpHeaders();
-	    
-	    headersx.setContentType(MediaType.APPLICATION_JSON);
-		/* headersx.set("Authorization", "Bearer "+access_token); */
-	    headersx.setBearerAuth(access_token);
-	    System.out.println("initokennya "+access_token);
-	    
-		HttpEntity<String> resultx = new HttpEntity<String>(headersx);
-		System.out.println("sama?"+resultx);
-		
-        ResponseEntity<String> exchange = restTemplate.exchange(urix, HttpMethod.GET, resultx, String.class);
-        
-        String content = exchange.getBody();
-        System.out.println("yeayyyy"+content);
-		//fail
-		// String get = restTemplatex.getForObject(urix ,String.class, resultx); 
-		//ResponseEntity<Response> response = restTemplatex.exchange(urix, HttpMethod.GET, resultx, Response.class);
-		
-	    return content;
-	}
-
-	@GetMapping("/nik/createdat")
-	public ResponseEntity<List<NikEntity>> getNikByCreatedDatex(@RequestParam Date startDate,
-			@RequestParam Date endDate) {
-		return new ResponseEntity<List<NikEntity>>(nikRepo.findBydateCreatedBetween(startDate, endDate), HttpStatus.OK);
-	}
-	
-	@GetMapping("/getData")
-	public ResponseEntity<List<NikEntity>> getData() {
-		return new ResponseEntity<List<NikEntity>>(nikRepo.getData(), HttpStatus.OK);
 	}
 	
 }
