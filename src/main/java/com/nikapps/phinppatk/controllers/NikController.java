@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -15,14 +17,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -87,7 +86,6 @@ public class NikController {
 			obj11.put("status", ne.get(j).getRegistrationStatus());
 			obj11.put("registration_id", ne.get(j).getRegistrationId());
 			
-			@SuppressWarnings("unused")
 			String dataNik = ne.get(j).getIdentificationNumber();
 			System.out.println("loop data nik "+dataNik);
 			
@@ -100,27 +98,28 @@ public class NikController {
 			/* headersx.set("Authorization", "Bearer "+access_token); */
 		    headersx.setBearerAuth(access_token);
 		    System.out.println("initokennya "+access_token);
-		    
 			HttpEntity<String> resultx = new HttpEntity<String>(headersx);
 			System.out.println("sama? "+resultx);
+			final String uuid = UUID.randomUUID().toString().replace("-", "");
+		    System.out.println("uuid = " + uuid);
 		    
 			try{
 				 ResponseEntity<String> exchange = restTemplatex.exchange(uriPpatk, HttpMethod.GET, resultx, String.class);
 				 ObjectMapper mapper = new ObjectMapper();
 					JsonNode jsonvalue = mapper.readTree(exchange.getBody());
 					System.out.println("jsonvalue"+jsonvalue);
-					PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(ne.get(j).getVersion() ,jsonvalue.toString(), ne.get(j).getRegistrationId(), ne.get(j).getRegistrationStatus(), ne.get(j).getIdentificationNumber()));
-					new ResponseEntity<>(r, HttpStatus.CREATED);			
+					PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(uuid.toString(), ne.get(j).getVersion() ,jsonvalue.toString(), ne.get(j).getRegistrationId(), ne.get(j).getRegistrationStatus()));
+					new ResponseEntity<>(r, HttpStatus.CREATED);			  
 					System.out.println("status "+r);
 			} catch(HttpStatusCodeException e){
-			     String otherResponse200 = e.getResponseBodyAsString();
-			     PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(ne.get(j).getVersion() ,otherResponse200.toString(), ne.get(j).getRegistrationId(), ne.get(j).getRegistrationStatus(), ne.get(j).getIdentificationNumber()));
+			     String response = e.getResponseBodyAsString();
+			     PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(uuid.toString(), ne.get(j).getVersion() ,response.toString(), ne.get(j).getRegistrationId(), ne.get(j).getRegistrationStatus()));
 				 new ResponseEntity<>(r, HttpStatus.CREATED);
 				 System.out.println("status "+r);
 			}
 
 			list.add(obj11);
-			System.out.println("list "+list);
+			System.out.println("list "+list.size());
 		}
 		obj.put("data", list);
 		obj.put("success", true);

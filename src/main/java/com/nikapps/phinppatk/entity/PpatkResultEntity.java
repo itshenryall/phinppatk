@@ -3,17 +3,15 @@ package com.nikapps.phinppatk.entity;
 import java.sql.Date;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.beans.factory.annotation.Value;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name="ppatk_result")
@@ -22,60 +20,54 @@ public class PpatkResultEntity {
 	public static final String getIdentificationNumber = null;
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false, nullable = false)
-    private Long id;
+    @Column(name = "id")
+    private String id;
 	
-	
-	@Column(name="version", columnDefinition = "integer default 25" ) private Long version;
-	
+	@Column(name="version") 
+	private Long version;
 	
 	@Column(name = "message")
 	private String message;
     
-	@CreationTimestamp
+	@CurrentTimestamp
     @Column(name="date_created")
 	private Date dateCreated;
     
-	@UpdateTimestamp
+	@CurrentTimestamp
 	@Column(name="last_updated") 
 	private Date lastUpdated;
 	 
-    //settonulldefault
+    //setonulldefault
 	@Column(name = "online_registration_id") 
 	private String onlineRegistrationId;
 	  
 	@Column(name = "registration_id") 
 	private String registrationId;
 	    
-	
 	@Column(name = "created_by_id", columnDefinition = "integer default 117") 
 	private String createdById="117";
 	 
 	@Column(name = "status") 
 	private String status;
-	
-	 @Column(name = "identification_number") 
-	 private String identificationNumber;
 		  
     public PpatkResultEntity() {
     	
     }
 
-	public PpatkResultEntity(Long version, String message,
-			String registrationId, String status, String identificationNumber) {
+	public PpatkResultEntity(String id, Long version, String message,
+		String registrationId, String status) {
+		this.id = id;
 		this.version = version;
 		this.message = message;
 		this.registrationId = registrationId;
 		this.status = status;
-		this.identificationNumber = identificationNumber;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -143,14 +135,6 @@ public class PpatkResultEntity {
 		this.status = status;
 	}
 
-	public String getIdentificationNumber() {
-		return identificationNumber;
-	}
-
-	public void setIdentificationNumber(String identificationNumber) {
-		this.identificationNumber = identificationNumber;
-	}
-
 	public static String getGetidentificationnumber() {
 		return getIdentificationNumber;
 	}
@@ -160,7 +144,6 @@ public class PpatkResultEntity {
 		return "PpatkResultEntity [id=" + id + ", version=" + version + ", message=" + message + ", dateCreated="
 				+ dateCreated + ", lastUpdated=" + lastUpdated + ", onlineRegistrationId=" + onlineRegistrationId
 				+ ", registrationId=" + registrationId + ", createdById=" + createdById + ", status=" + status
-				+ ", identificationNumber=" + identificationNumber + "]";
+				+ "]";
 	}
-	
 }
