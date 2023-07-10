@@ -12,7 +12,7 @@ import com.nikapps.phinppatk.entity.NikEntity;
 public interface NikRepo extends JpaRepository<NikEntity, Long> {
 	List<NikEntity> findByIdentificationNumber(String identificationNumber);
 	
-	@Query(value="select a.id, a.id as registration_id, a.version, a.registration_status, b.identification_number, b.date_created from profits_backoffice.registration a \r\n"
+	@Query(value="select b.id, a.id as registration_id, a.version, a.registration_status, b.identification_number, b.date_created from profits_backoffice.registration a \r\n"
 			+ "inner join profits_backoffice.registration_personal_information b\r\n"
 			+ "ON b.id = a.personal_information_id\r\n"
 			+ "WHERE a.registration_status IN ('VERIFIED', \r\n"
