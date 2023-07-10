@@ -51,7 +51,7 @@ public class NikController {
 	@SuppressWarnings("unchecked")
 	@GetMapping("/nik")
 	public JSONObject getNikByCreatedDate(@RequestParam Date startDate, @RequestParam Date endDate,
-			String identificationNumber, PpatkResultEntity ppatkResultEntity) throws JsonMappingException, JsonProcessingException {
+		   PpatkResultEntity ppatkResultEntity) throws JsonMappingException, JsonProcessingException {
 		
 		JSONArray list = new JSONArray();
 		JSONObject obj = new JSONObject();		
@@ -117,7 +117,6 @@ public class NikController {
 				 new ResponseEntity<>(r, HttpStatus.CREATED);
 				 System.out.println("status "+r);
 			}
-
 			list.add(obj11);
 			System.out.println("list "+list.size());
 		}

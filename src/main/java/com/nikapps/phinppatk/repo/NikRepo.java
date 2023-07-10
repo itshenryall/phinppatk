@@ -17,7 +17,7 @@ public interface NikRepo extends JpaRepository<NikEntity, Long> {
 			+ "ON b.id = a.personal_information_id\r\n"
 			+ "WHERE a.registration_status IN ('VERIFIED', \r\n"
 			+ "'APPROVED',\r\n"
-			+ "'PENDING KSEI',\r\n"
+			+ "'NEW',\r\n"
 			+ "'FAILED KSEI',\r\n"
 			+ "'COMPLETE SID',\r\n"
 			+ "'PROCESS RDN',\r\n"
@@ -26,7 +26,7 @@ public interface NikRepo extends JpaRepository<NikEntity, Long> {
 			+ "'PENDING FUND', \r\n"
 			+ "'FORCED COMPLETE',\r\n"
 			+ "'MANUAL COMPLETE',\r\n"
-			+ "'COMPLETE'); ", nativeQuery = true)
+			+ "'COMPLETE') and (b.date_created BETWEEN :startDate AND :endDate);", nativeQuery = true)
 	List<NikEntity> findBydateCreatedBetween(Date startDate, Date endDate);
 
 }
