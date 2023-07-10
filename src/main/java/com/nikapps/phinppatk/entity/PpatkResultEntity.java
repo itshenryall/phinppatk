@@ -48,14 +48,14 @@ public class PpatkResultEntity {
 	private String createdById="117";
 	 
 	@Column(name = "status") 
-	private String status;
+	private Boolean status;
 		  
     public PpatkResultEntity() {
     	
     }
 
 	public PpatkResultEntity(String id, Long version, String message,
-		String registrationId, String status) {
+		String registrationId, Boolean status) {
 		this.id = id;
 		this.version = version;
 		this.message = message;
@@ -127,11 +127,11 @@ public class PpatkResultEntity {
 		this.createdById = createdById;
 	}
 
-	public String getStatus() {
+	public Boolean getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Boolean status) {
 		this.status = status;
 	}
 

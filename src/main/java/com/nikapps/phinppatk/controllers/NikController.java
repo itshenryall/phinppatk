@@ -106,14 +106,16 @@ public class NikController {
 			try{
 				 ResponseEntity<String> exchange = restTemplatex.exchange(uriPpatk, HttpMethod.GET, resultx, String.class);
 				 ObjectMapper mapper = new ObjectMapper();
+				    boolean statusData = true;
 					JsonNode jsonvalue = mapper.readTree(exchange.getBody());
 					System.out.println("jsonvalue"+jsonvalue);
-					PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(uuid.toString(), ne.get(j).getVersion() ,jsonvalue.toString(), ne.get(j).getRegistrationId(), ne.get(j).getRegistrationStatus()));
+					PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(uuid.toString(), ne.get(j).getVersion() ,jsonvalue.toString(), ne.get(j).getRegistrationId(), statusData));
 					new ResponseEntity<>(r, HttpStatus.CREATED);			  
 					System.out.println("status "+r);
 			} catch(HttpStatusCodeException e){
+				 boolean statusData = false;
 			     String response = e.getResponseBodyAsString();
-			     PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(uuid.toString(), ne.get(j).getVersion() ,response.toString(), ne.get(j).getRegistrationId(), ne.get(j).getRegistrationStatus()));
+			     PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(uuid.toString(), ne.get(j).getVersion() ,response.toString(), ne.get(j).getRegistrationId(), statusData));
 				 new ResponseEntity<>(r, HttpStatus.CREATED);
 				 System.out.println("status "+r);
 			}
