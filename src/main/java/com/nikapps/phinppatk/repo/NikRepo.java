@@ -17,7 +17,7 @@ public interface NikRepo extends JpaRepository<NikEntity, Long> {
 			+ "ON b.id = a.personal_information_id\r\n"
 			+ "WHERE a.registration_status IN ('VERIFIED', \r\n"
 			+ "'APPROVED',\r\n"
-			+ "'NEW',\r\n"
+			+ "'PENDING KSEI',\r\n"
 			+ "'FAILED KSEI',\r\n"
 			+ "'COMPLETE SID',\r\n"
 			+ "'PROCESS RDN',\r\n"
