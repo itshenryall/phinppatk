@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -16,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,10 +30,10 @@ import com.nikapps.phinppatk.entity.NikEntity;
 import com.nikapps.phinppatk.entity.PpatkResultEntity;
 import com.nikapps.phinppatk.repo.NikRepo;
 import com.nikapps.phinppatk.repo.PpatkResultRepo;
-import com.nikapps.phinppatk.repo.RegistRepo;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
-
+@Tag(name = "Api Documentation for Phinppatk API", description = "management APIs")
 @RestController
 @RequestMapping("/api")
 public class NikController {
@@ -44,20 +44,16 @@ public class NikController {
 	@Autowired
 	PpatkResultRepo ppatkResultRepo;
 	
-	@Autowired
-	RegistRepo registRepo;
-	
-
 	@SuppressWarnings("unchecked")
 	@GetMapping("/nik")
-	public JSONObject getNikByCreatedDate(@RequestParam Date startDate, @RequestParam Date endDate,
+	public JSONObject getNikByCreatedDate(@RequestParam Date startDate, @RequestParam Date endDate,Model model, 
 		   PpatkResultEntity ppatkResultEntity) throws JsonMappingException, JsonProcessingException {
 		
 		JSONArray list = new JSONArray();
 		JSONObject obj = new JSONObject();		
 		List<NikEntity> ne = new ArrayList<NikEntity>();
 		nikRepo.findBydateCreatedBetween(startDate, endDate).forEach(ne::add);
-			
+		
 		//generate token
 	    String uri = "http://192.168.153.2/api/auth"; 
 	    String notEncoded ="phintraco:p7i5t7a5";
@@ -72,14 +68,16 @@ public class NikController {
 			HttpEntity<String> result = new HttpEntity<String>(headers);
 			String token = setAuth.postForObject(uri, result, String.class);
 			
-			Object objv=JSONValue.parse(token); 
-			System.out.println(objv);
-			JSONObject jsonObject = (JSONObject) objv; 
-			String access_token = (String) jsonObject.get("access_token"); 
+		//awal
+		Object objv=JSONValue.parse(token); 
+		System.out.println(objv);
+		JSONObject jsonObject = (JSONObject) objv; 
+		String access_token = (String) jsonObject.get("access_token"); 
+
+		for (int j = 0; j < ne.size(); j++) {
+			
 			//dapat token
 			System.out.println("dapat tokenya? "+access_token);
-	
-		for (int j = 0; j < ne.size(); j++) {
 			JSONObject obj11 = new JSONObject();
 			obj11.put("nik", ne.get(j).getIdentificationNumber());
 			obj11.put("version", ne.get(j).getVersion());
@@ -87,6 +85,7 @@ public class NikController {
 			obj11.put("registration_id", ne.get(j).getRegistrationId());
 			
 			String dataNik = ne.get(j).getIdentificationNumber();
+			String idRegis = ne.get(j).getRegistrationId();
 			System.out.println("loop data nik "+dataNik);
 			
 			String uriPpatk = "http://192.168.153.3/api/v1/data/nik/"+dataNik;
@@ -102,28 +101,45 @@ public class NikController {
 			System.out.println("sama? "+resultx);
 			final String uuid = UUID.randomUUID().toString().replace("-", "");
 		    System.out.println("uuid = " + uuid);
-		    
+			
 			try{
-				 ResponseEntity<String> exchange = restTemplatex.exchange(uriPpatk, HttpMethod.GET, resultx, String.class);
-				 ObjectMapper mapper = new ObjectMapper();
-				    boolean statusData = true;
-					JsonNode jsonvalue = mapper.readTree(exchange.getBody());
-					System.out.println("jsonvalue"+jsonvalue);
-					PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(uuid.toString(), ne.get(j).getVersion() ,jsonvalue.toString(), ne.get(j).getRegistrationId(), statusData));
-					new ResponseEntity<>(r, HttpStatus.CREATED);			  
-					System.out.println("status "+r);
+			    PpatkResultEntity regisppatk = ppatkResultRepo.findByRegistrationId(idRegis);	    
+			    //kalau data kosong di table ppatk resurt maka insert
+			    if (regisppatk == null) {
+			    	ResponseEntity<String> exchange = restTemplatex.exchange(uriPpatk, HttpMethod.GET, resultx, String.class);
+					ObjectMapper mapper = new ObjectMapper();
+					   boolean statusData = true;
+					   JsonNode jsonvalue = mapper.readTree(exchange.getBody());
+					   System.out.println("jsonvalue"+jsonvalue);
+					   PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(uuid.toString(), ne.get(j).getVersion() ,jsonvalue.toString(), ne.get(j).getRegistrationId(), statusData));
+					   new ResponseEntity<>(r, HttpStatus.CREATED);			  
+					   System.out.println("status "+r);
+			    	System.out.println("ini keinsert ke table dengan response found ");
+				}else {
+					new ResponseEntity<>(regisppatk, HttpStatus.FOUND);
+					System.out.println("ini ada datanya jadi ga keinsert (response found) "+regisppatk.getRegistrationId());
+				}
+			    //if data nik response: not found
 			} catch(HttpStatusCodeException e){
-				 boolean statusData = false;
-			     String response = e.getResponseBodyAsString();
-			     PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(uuid.toString(), ne.get(j).getVersion() ,response.toString(), ne.get(j).getRegistrationId(), statusData));
-				 new ResponseEntity<>(r, HttpStatus.CREATED);
-				 System.out.println("status "+r);
+				PpatkResultEntity regisppatk = ppatkResultRepo.findByRegistrationId(idRegis);	    
+				if (regisppatk == null) {
+					boolean statusData = false;
+				    String response = e.getResponseBodyAsString();
+				    PpatkResultEntity r = ppatkResultRepo.save(new PpatkResultEntity(uuid.toString(), ne.get(j).getVersion() ,response.toString(), ne.get(j).getRegistrationId(), statusData));
+					new ResponseEntity<>(r, HttpStatus.CREATED);
+					System.out.println("status "+r);
+					System.out.println("ini keinsert ke table dengan response not found ");
+					
+				}else {
+					new ResponseEntity<>(regisppatk, HttpStatus.FOUND);
+					System.out.println("ini ada datanya jadi ga ke insert (response not found) "+regisppatk.getRegistrationId());
+				}
 			}
 			list.add(obj11);
 			System.out.println("list "+list.size());
 		}
-		obj.put("data", list);
-		obj.put("success", true);
+		obj.put("Success",true);
+		obj.put("data", list);	
 		return obj;
 	}
 	
