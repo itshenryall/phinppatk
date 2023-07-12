@@ -27,7 +27,7 @@ public interface NikRepo extends JpaRepository<NikEntity, Long> {
 			+ "'PENDING FUND', \r\n"
 			+ "'FORCED COMPLETE',\r\n"
 			+ "'MANUAL COMPLETE',\r\n"
-			+ "'COMPLETE') and (b.date_created BETWEEN :startDate AND :endDate) limit 3;", nativeQuery = true)
+			+ "'COMPLETE') and (b.date_created BETWEEN :startDate AND :endDate) limit 1;", nativeQuery = true)
 	List<NikEntity> findBydateCreatedBetween(Date startDate, Date endDate);
 
 

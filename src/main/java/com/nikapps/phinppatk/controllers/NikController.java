@@ -54,27 +54,29 @@ public class NikController {
 		List<NikEntity> ne = new ArrayList<NikEntity>();
 		nikRepo.findBydateCreatedBetween(startDate, endDate).forEach(ne::add);
 		
-		//generate token
-	    String uri = "http://192.168.153.2/api/auth"; 
-	    String notEncoded ="phintraco:p7i5t7a5";
-	    String encodedAuth = Base64.getEncoder().encodeToString(notEncoded.getBytes());
-	    System.out.println("encodeUserPass "+encodedAuth);
-		    RestTemplate setAuth = new RestTemplate();
-		    HttpHeaders headers = new HttpHeaders();
-		    headers.setContentType(MediaType.APPLICATION_JSON);
-		    headers.set("client_id", "phintraco");
-		    headers.set("Authorization", "Basic "+encodedAuth);
-  
-			HttpEntity<String> result = new HttpEntity<String>(headers);
-			String token = setAuth.postForObject(uri, result, String.class);
-			
 		
-		Object objv=JSONValue.parse(token); 
-		System.out.println(objv);
-		JSONObject jsonObject = (JSONObject) objv; 
-		String access_token = (String) jsonObject.get("access_token"); 
-
 		for (int j = 0; j < ne.size(); j++) {
+			
+			//generate token
+		    String uri = "http://192.168.153.2/api/auth"; 
+		    String notEncoded ="phintraco:p7i5t7a5";
+		    String encodedAuth = Base64.getEncoder().encodeToString(notEncoded.getBytes());
+		    System.out.println("encodeUserPass "+encodedAuth);
+			    RestTemplate setAuth = new RestTemplate();
+			    HttpHeaders headers = new HttpHeaders();
+			    headers.setContentType(MediaType.APPLICATION_JSON);
+			    headers.set("client_id", "phintraco");
+			    headers.set("Authorization", "Basic "+encodedAuth);
+	  
+				HttpEntity<String> result = new HttpEntity<String>(headers);
+				String token = setAuth.postForObject(uri, result, String.class);
+				
+			
+			Object objv=JSONValue.parse(token); 
+			System.out.println(objv);
+			JSONObject jsonObject = (JSONObject) objv; 
+			String access_token = (String) jsonObject.get("access_token"); 
+
 			
 			//dapat token
 			System.out.println("dapat tokenya? "+access_token);
