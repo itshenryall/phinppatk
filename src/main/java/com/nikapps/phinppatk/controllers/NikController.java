@@ -121,7 +121,7 @@ public class NikController {
 					new ResponseEntity<>(regisppatk, HttpStatus.FOUND);
 					System.out.println("ini ada datanya jadi ga keinsert (response found) "+regisppatk.getRegistrationId());
 				}
-			    //if data nik response: not found
+			    //if data nik response: not found & null
 			} catch(HttpStatusCodeException e){
 				PpatkResultEntity regisppatk = ppatkResultRepo.findByRegistrationId(idRegis);	    
 				if (regisppatk == null) {
