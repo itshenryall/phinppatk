@@ -68,7 +68,7 @@ public class NikController {
 			HttpEntity<String> result = new HttpEntity<String>(headers);
 			String token = setAuth.postForObject(uri, result, String.class);
 			
-		//awal
+		
 		Object objv=JSONValue.parse(token); 
 		System.out.println(objv);
 		JSONObject jsonObject = (JSONObject) objv; 
